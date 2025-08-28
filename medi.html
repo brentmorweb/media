@@ -358,6 +358,10 @@
             height: 60px;
         }
 
+        .folders-grid.list-view .folder-preview {
+            display: none;
+        }
+
         .preview-thumb {
             flex: 1;
             height: 100%;
@@ -1662,14 +1666,16 @@
         function switchView(viewType) {
             const buttons = document.querySelectorAll('.view-btn');
             const grid = document.getElementById('foldersGrid');
-            
+
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             if (viewType === 'list') {
                 grid.style.gridTemplateColumns = '1fr';
+                grid.classList.add('list-view');
             } else {
                 grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+                grid.classList.remove('list-view');
             }
         }
 
