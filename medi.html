@@ -659,36 +659,7 @@
             color: #6c757d;
         }
 
-        /* Quick Preview */
-        .quick-preview {
-            position: absolute;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            z-index: 2000;
-            max-width: 300px;
-            display: none;
-            pointer-events: none;
-        }
 
-        .quick-preview.active {
-            display: block;
-        }
-
-        .quick-preview img {
-            width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        .preview-info {
-            font-size: 12px;
-            color: #6c757d;
-        }
 
         /* Detail Panel */
         .detail-panel {
@@ -1193,64 +1164,56 @@
             <div class="gallery-content">
                 <div class="images-area">
                     <div class="image-grid" id="imageGrid">
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400')">
                             <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400" alt="Office meeting">
                             <div class="image-info">
                                 <div class="image-name">office-meeting.jpg</div>
                                 <div class="image-meta">1.2 MB • 1920×1280</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400')">
                             <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400" alt="Business discussion">
                             <div class="image-info">
                                 <div class="image-name">business-discussion.jpg</div>
                                 <div class="image-meta">980 KB • 1600×1067</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400')">
                             <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400" alt="Classroom">
                             <div class="image-info">
                                 <div class="image-name">classroom-scene.jpg</div>
                                 <div class="image-meta">1.5 MB • 2048×1365</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400')">
                             <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" alt="Waiting area">
                             <div class="image-info">
                                 <div class="image-name">waiting-area.jpg</div>
                                 <div class="image-meta">850 KB • 1440×960</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400')">
                             <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400" alt="Team meeting">
                             <div class="image-info">
                                 <div class="image-name">team-meeting.jpg</div>
                                 <div class="image-meta">1.1 MB • 1800×1200</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400')">
                             <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400" alt="Collaboration">
                             <div class="image-info">
                                 <div class="image-name">collaboration.jpg</div>
                                 <div class="image-meta">920 KB • 1500×1000</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400')">
                             <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400" alt="Team high-five">
                             <div class="image-info">
                                 <div class="image-name">team-highfive.jpg</div>
                                 <div class="image-meta">1.3 MB • 1920×1280</div>
                             </div>
                         </div>
-                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400')" 
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400')">
                             <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400" alt="Gardening">
                             <div class="image-info">
                                 <div class="image-name">gardening-hands.jpg</div>
@@ -1353,12 +1316,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Quick Preview -->
-    <div class="quick-preview" id="quickPreview">
-        <img id="previewImage" src="" alt="">
-        <div class="preview-info" id="previewInfo"></div>
     </div>
 
     <script>
@@ -1671,30 +1628,6 @@
             } else {
                 grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
             }
-        }
-
-        // Quick Preview Functions
-        function showQuickPreview(event, imageItem) {
-            const preview = document.getElementById('quickPreview');
-            const previewImage = document.getElementById('previewImage');
-            const previewInfo = document.getElementById('previewInfo');
-            const img = imageItem.querySelector('img');
-            const info = imageItem.querySelector('.image-info');
-            
-            previewImage.src = img.src;
-            previewInfo.innerHTML = info.innerHTML;
-            
-            // Position preview near cursor
-            const rect = imageItem.getBoundingClientRect();
-            preview.style.left = (rect.right + 10) + 'px';
-            preview.style.top = rect.top + 'px';
-            
-            preview.classList.add('active');
-        }
-
-        function hideQuickPreview() {
-            const preview = document.getElementById('quickPreview');
-            preview.classList.remove('active');
         }
 
         // Gallery Modal Functions
