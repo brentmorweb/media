@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced CMS Media Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header Navigation */
+        .nav-header {
+            background-color: #2d5a4f;
+            color: white;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-header a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .nav-header a:hover {
+            opacity: 1;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            height: calc(100vh - 50px);
+        }
+
+        /* Folder Tree Sidebar */
+        .folder-tree {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s;
+        }
+
+        .folder-tree.collapsed {
+            width: 60px;
+        }
+
+        .tree-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tree-toggle {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .tree-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .tree-item:hover {
+            background: #f8f9fa;
+        }
+
+        .tree-item.active {
+            background: #e8f5e8;
+            border-left-color: #50c878;
+            color: #2d5a4f;
+        }
+
+        .tree-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .tree-label {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .folder-tree.collapsed .tree-label {
+            display: none;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .breadcrumb-path {
+            font-size: 16px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb-path span {
+            color: #333;
+        }
+
+        .breadcrumb-separator {
+            color: #6c757d;
+        }
+
+        .add-folder-btn {
+            background: #50c878;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-folder-btn:hover {
+            background: #45b069;
+        }
+
+        /* Recent Files Panel */
+        .recent-files {
+            padding: 15px 30px;
+            border-bottom: 1px solid #dee2e6;
+            background: #fafbfc;
+        }
+
+        .recent-files h3 {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .recent-items {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .recent-item {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .recent-item:hover {
+            border-color: #50c878;
+        }
+
+        .recent-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Search and Controls */
+        .controls-bar {
+            padding: 15px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 40px;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            font-size: 14px;
+            background: #f8f9fa;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .filter-dropdown, .sort-dropdown {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .view-toggles {
+            display: flex;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            background: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .view-btn:last-child {
+            border-right: none;
+        }
+
+        .view-btn.active {
+            background: #50c878;
+            color: white;
+        }
+
+        /* Folders Grid */
+        .folders-section {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .folders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .folder-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .folder-card:hover {
+            border-color: #50c878;
+            box-shadow: 0 2px 8px rgba(80, 200, 120, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .folder-card.drag-over {
+            border-color: #50c878;
+            background: #f0f9f0;
+            border-style: dashed;
+        }
+
+        .folder-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .folder-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            color: #50c878;
+        }
+
+        .folder-info {
+            flex: 1;
+        }
+
+        .folder-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .folder-meta {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .folder-count {
+            background: #50c878;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .folder-preview {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 15px;
+            height: 60px;
+        }
+
+        .preview-thumb {
+            flex: 1;
+            height: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .preview-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-thumb.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .folder-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .folder-date {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .folder-menu {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #6c757d;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        /* Drag & Drop Overlay */
+        .drop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(80, 200, 120, 0.1);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .drop-overlay.active {
+            display: flex;
+        }
+
+        .drop-message {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px dashed #50c878;
+            text-align: center;
+            font-size: 18px;
+            color: #50c878;
+        }
+
+        /* Upload Progress */
+        .upload-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1500;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: #f1f3f4;
+            border-radius: 2px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #50c878;
+            transition: width 0.3s;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Gallery Modal */
+        .gallery-modal {
+            background: white;
+            width: 95%;
+            max-width: 1400px;
+            height: 90%;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+        }
+
+        .modal-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: #6c757d;
+        }
+
+        .modal-breadcrumb span {
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .close-modal:hover {
+            background: #f8f9fa;
+        }
+
+        .modal-toolbar {
+            padding: 15px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #fafbfc;
+        }
+
+        .add-file-btn {
+            background: #50c878;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .modal-search {
+            flex: 1;
+            max-width: 300px;
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .format-convert {
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* Gallery Content */
+        .gallery-content {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .images-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .image-item {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .image-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-item.selected {
+            border-color: #50c878;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-info {
+            padding: 8px 12px;
+            background: white;
+        }
+
+        .image-name {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .image-meta {
+            font-size: 10px;
+            color: #6c757d;
+        }
+
+        /* Quick Preview */
+        .quick-preview {
+            position: absolute;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            max-width: 300px;
+            display: none;
+            pointer-events: none;
+        }
+
+        .quick-preview.active {
+            display: block;
+        }
+
+        .quick-preview img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .preview-info {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            width: 350px;
+            background: white;
+            border-left: 1px solid #dee2e6;
+            display: none;
+            flex-direction: column;
+        }
+
+        .detail-panel.active {
+            display: flex;
+        }
+
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .detail-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+        }
+
+        .detail-tab.active {
+            color: #50c878;
+            border-bottom-color: #50c878;
+        }
+
+        .detail-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .selected-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .editor-tools {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .editor-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .editor-btn:hover {
+            background: #50c878;
+            color: white;
+        }
+
+        .file-info {
+            margin-bottom: 20px;
+        }
+
+        .file-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .file-info-label {
+            color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Duplicate Warning */
+        .duplicate-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px;
+            display: none;
+        }
+
+        .duplicate-warning.active {
+            display: block;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .warning-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .warning-btn {
+            padding: 6px 12px;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .warning-btn.primary {
+            background: #50c878;
+            color: white;
+            border-color: #50c878;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #50c878;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .folder-tree {
+                width: 60px;
+            }
+            
+            .folder-tree .tree-label {
+                display: none;
+            }
+            
+            .gallery-modal {
+                width: 98%;
+                height: 95%;
+            }
+            
+            .detail-panel {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                right: 0;
+                z-index: 10;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .folders-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 15px;
+            }
+            
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <nav class="nav-header">
+        <a href="#">Pages</a>
+        <a href="#">Posts</a>
+        <a href="#" style="opacity: 1;">Site</a>
+        <a href="#">Modules</a>
+        <a href="#">System</a>
+        <a href="#">marwebadmin</a>
+    </nav>
+
+    <div class="main-layout">
+        <!-- Folder Tree Sidebar -->
+        <div class="folder-tree" id="folderTree">
+            <div class="tree-header">
+                <h3>Folders</h3>
+                <button class="tree-toggle" onclick="toggleTree()">◀</button>
+            </div>
+            <div class="tree-content">
+                <div class="tree-item active" onclick="selectFolder(this, 'Site > Media')">
+                    <span class="tree-icon">🏠</span>
+                    <span class="tree-label">All Media</span>
+                </div>
+                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Documents')">
+                    <span class="tree-icon">📄</span>
+                    <span class="tree-label">Documents</span>
+                </div>
+                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Images')">
+                    <span class="tree-icon">🖼️</span>
+                    <span class="tree-label">Images</span>
+                </div>
+                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Blog')">
+                    <span class="tree-icon">📝</span>
+                    <span class="tree-label">Blog</span>
+                </div>
+                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Gallery')">
+                    <span class="tree-icon">🖼️</span>
+                    <span class="tree-label">Gallery</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <div class="breadcrumb-path" id="breadcrumbPath">
+                    Site <span class="breadcrumb-separator">></span> <span>Media</span>
+                </div>
+                <button class="add-folder-btn">
+                    <span>+</span>
+                    Add Folder
+                </button>
+            </div>
+
+            <!-- Recent Files Panel -->
+            <div class="recent-files">
+                <h3>Recently Accessed</h3>
+                <div class="recent-items">
+                    <div class="recent-item">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200" alt="Recent 1">
+                    </div>
+                    <div class="recent-item">
+                        <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=200" alt="Recent 2">
+                    </div>
+                    <div class="recent-item">
+                        <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=200" alt="Recent 3">
+                    </div>
+                    <div class="recent-item">
+                        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=200" alt="Recent 4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Controls -->
+            <div class="controls-bar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search files and folders..." id="searchInput">
+                </div>
+                <select class="filter-dropdown" id="filterDropdown">
+                    <option value="all">All Types</option>
+                    <option value="images">Images</option>
+                    <option value="documents">Documents</option>
+                    <option value="videos">Videos</option>
+                </select>
+                <select class="sort-dropdown" id="sortDropdown" onchange="sortFolders()">
+                    <option value="name">Sort by Name</option>
+                    <option value="date">Sort by Date</option>
+                    <option value="size">Sort by Size</option>
+                    <option value="type">Sort by Type</option>
+                </select>
+                <div class="view-toggles">
+                    <button class="view-btn active" onclick="switchView('grid')">⊞</button>
+                    <button class="view-btn" onclick="switchView('list')">☰</button>
+                </div>
+            </div>
+
+            <!-- Folders Section -->
+            <div class="folders-section">
+                <div class="folders-grid" id="foldersGrid">
+                    <div class="folder-card" onclick="openGallery('Documents - Job Resumes')" ondragover="allowDrop(event)" ondrop="dropFiles(event, 'Documents')">
+                        <div class="folder-header">
+                            <span class="folder-icon">📄</span>
+                            <div class="folder-info">
+                                <div class="folder-name">Documents - Job Resumes</div>
+                                <div class="folder-meta">Empty folder</div>
+                            </div>
+                            <div class="folder-count">0</div>
+                        </div>
+                        <div class="folder-preview">
+                            <div class="preview-thumb empty">No files</div>
+                        </div>
+                        <div class="folder-actions">
+                            <div class="folder-date">Apr 01/24</div>
+                            <div class="folder-menu">
+                                <button class="action-btn" title="Settings">⚙️</button>
+                                <button class="action-btn" title="Download">⬇️</button>
+                                <button class="action-btn" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="openGallery('General Images')" ondragover="allowDrop(event)" ondrop="dropFiles(event, 'Images')">
+                        <div class="folder-header">
+                            <span class="folder-icon">🖼️</span>
+                            <div class="folder-info">
+                                <div class="folder-name">General Images</div>
+                                <div class="folder-meta">1 image</div>
+                            </div>
+                            <div class="folder-count">1</div>
+                        </div>
+                        <div class="folder-preview">
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=100" alt="Preview">
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <div class="folder-date">Jan 03/24</div>
+                            <div class="folder-menu">
+                                <button class="action-btn" title="Settings">⚙️</button>
+                                <button class="action-btn" title="Download">⬇️</button>
+                                <button class="action-btn" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="openGallery('Placeholder - Blog')" ondragover="allowDrop(event)" ondrop="dropFiles(event, 'Blog')">
+                        <div class="folder-header">
+                            <span class="folder-icon">📝</span>
+                            <div class="folder-info">
+                                <div class="folder-name">Placeholder - Blog</div>
+                                <div class="folder-meta">8 images</div>
+                            </div>
+                            <div class="folder-count">8</div>
+                        </div>
+                        <div class="folder-preview">
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=100" alt="Preview 1">
+                            </div>
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=100" alt="Preview 2">
+                            </div>
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=100" alt="Preview 3">
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <div class="folder-date">Jun 01/23</div>
+                            <div class="folder-menu">
+                                <button class="action-btn" title="Settings">⚙️</button>
+                                <button class="action-btn" title="Download">⬇️</button>
+                                <button class="action-btn" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="openGallery('Placeholder - Gallery')" ondragover="allowDrop(event)" ondrop="dropFiles(event, 'Gallery')">
+                        <div class="folder-header">
+                            <span class="folder-icon">🖼️</span>
+                            <div class="folder-info">
+                                <div class="folder-name">Placeholder - Gallery</div>
+                                <div class="folder-meta">13 images</div>
+                            </div>
+                            <div class="folder-count">13</div>
+                        </div>
+                        <div class="folder-preview">
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=100" alt="Preview 1">
+                            </div>
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=100" alt="Preview 2">
+                            </div>
+                            <div class="preview-thumb">
+                                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=100" alt="Preview 3">
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <div class="folder-date">May 15/23</div>
+                            <div class="folder-menu">
+                                <button class="action-btn" title="Settings">⚙️</button>
+                                <button class="action-btn" title="Download">⬇️</button>
+                                <button class="action-btn" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="openGallery('Placeholder - Files')" ondragover="allowDrop(event)" ondrop="dropFiles(event, 'Files')">
+                        <div class="folder-header">
+                            <span class="folder-icon">📁</span>
+                            <div class="folder-info">
+                                <div class="folder-name">Placeholder - Files</div>
+                                <div class="folder-meta">8 files</div>
+                            </div>
+                            <div class="folder-count">8</div>
+                        </div>
+                        <div class="folder-preview">
+                            <div class="preview-thumb empty">Mixed files</div>
+                        </div>
+                        <div class="folder-actions">
+                            <div class="folder-date">Jan 04/23</div>
+                            <div class="folder-menu">
+                                <button class="action-btn" title="Settings">⚙️</button>
+                                <button class="action-btn" title="Download">⬇️</button>
+                                <button class="action-btn" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drag & Drop Overlay -->
+    <div class="drop-overlay" id="dropOverlay">
+        <div class="drop-message">
+            📁 Drop files here to upload
+            <div style="font-size: 14px; margin-top: 10px; opacity: 0.8;">
+                Supported formats: JPG, PNG, GIF, WebP, PDF, DOC
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Progress -->
+    <div class="upload-progress" id="uploadProgress">
+        <h4 style="margin-bottom: 15px;">Uploading Files</h4>
+        <div id="progressList"></div>
+    </div>
+
+    <!-- Duplicate Warning -->
+    <div class="duplicate-warning" id="duplicateWarning">
+        <div class="warning-title">⚠️ Duplicate File Detected</div>
+        <div>A file with this name already exists. What would you like to do?</div>
+        <div class="warning-actions">
+            <button class="warning-btn primary" onclick="handleDuplicate('replace')">Replace</button>
+            <button class="warning-btn" onclick="handleDuplicate('keep')">Keep Both</button>
+            <button class="warning-btn" onclick="handleDuplicate('cancel')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div class="modal-overlay" id="galleryModal">
+        <div class="gallery-modal">
+            <div class="modal-header">
+                <div class="modal-breadcrumb" id="modalBreadcrumb">
+                    Site <span class="breadcrumb-separator">></span> Media <span class="breadcrumb-separator">></span> <span>Blog</span>
+                </div>
+                <button class="close-modal" onclick="closeGallery()">✕</button>
+            </div>
+
+            <div class="modal-toolbar">
+                <button class="add-file-btn" onclick="document.getElementById('fileInput').click()">
+                    <span class="loading-spinner" id="uploadSpinner" style="display: none;"></span>
+                    Add Files
+                </button>
+                <input type="file" id="fileInput" multiple accept="image/*,application/pdf,.doc,.docx" style="display: none;" onchange="handleFileUpload(event)">
+                
+                <input type="text" class="modal-search" placeholder="Search images..." id="modalSearch" oninput="filterImages()">
+                
+                <select class="format-convert" id="formatConverter">
+                    <option value="">Convert to...</option>
+                    <option value="jpg">JPG</option>
+                    <option value="png">PNG</option>
+                    <option value="webp">WebP</option>
+                </select>
+            </div>
+
+            <div class="gallery-content">
+                <div class="images-area">
+                    <div class="image-grid" id="imageGrid">
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400" alt="Office meeting">
+                            <div class="image-info">
+                                <div class="image-name">office-meeting.jpg</div>
+                                <div class="image-meta">1.2 MB • 1920×1280</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400" alt="Business discussion">
+                            <div class="image-info">
+                                <div class="image-name">business-discussion.jpg</div>
+                                <div class="image-meta">980 KB • 1600×1067</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400" alt="Classroom">
+                            <div class="image-info">
+                                <div class="image-name">classroom-scene.jpg</div>
+                                <div class="image-meta">1.5 MB • 2048×1365</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" alt="Waiting area">
+                            <div class="image-info">
+                                <div class="image-name">waiting-area.jpg</div>
+                                <div class="image-meta">850 KB • 1440×960</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400" alt="Team meeting">
+                            <div class="image-info">
+                                <div class="image-name">team-meeting.jpg</div>
+                                <div class="image-meta">1.1 MB • 1800×1200</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400" alt="Collaboration">
+                            <div class="image-info">
+                                <div class="image-name">collaboration.jpg</div>
+                                <div class="image-meta">920 KB • 1500×1000</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400" alt="Team high-five">
+                            <div class="image-info">
+                                <div class="image-name">team-highfive.jpg</div>
+                                <div class="image-meta">1.3 MB • 1920×1280</div>
+                            </div>
+                        </div>
+                        <div class="image-item" onclick="selectImage(this, 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400')" 
+                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400" alt="Gardening">
+                            <div class="image-info">
+                                <div class="image-name">gardening-hands.jpg</div>
+                                <div class="image-meta">780 KB • 1200×800</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Panel -->
+                <div class="detail-panel" id="detailPanel">
+                    <div class="detail-header">
+                        <button class="detail-tab active" onclick="switchDetailTab(this, 'details')">Details</button>
+                        <button class="detail-tab" onclick="switchDetailTab(this, 'edit')">Edit</button>
+                        <button class="detail-tab" onclick="switchDetailTab(this, 'info')">Info</button>
+                    </div>
+
+                    <div class="detail-content">
+                        <img id="selectedImage" src="" alt="" class="selected-image" style="display: none;">
+
+                        <!-- Details Tab -->
+                        <div id="detailsContent">
+                            <div class="editor-tools">
+                                <button class="editor-btn" onclick="cropImage()" title="Crop">✂️</button>
+                                <button class="editor-btn" onclick="resizeImage()" title="Resize">📏</button>
+                                <button class="editor-btn" onclick="rotateImage()" title="Rotate">↻</button>
+                                <button class="editor-btn" onclick="adjustImage()" title="Adjust">🎨</button>
+                            </div>
+
+                            <div class="file-info">
+                                <div class="file-info-item">
+                                    <span class="file-info-label">File:</span>
+                                    <span id="fileName">Select an image</span>
+                                </div>
+                                <div class="file-info-item">
+                                    <span class="file-info-label">Size:</span>
+                                    <span id="fileSize">-</span>
+                                </div>
+                                <div class="file-info-item">
+                                    <span class="file-info-label">Dimensions:</span>
+                                    <span id="fileDimensions">-</span>
+                                </div>
+                                <div class="file-info-item">
+                                    <span class="file-info-label">Format:</span>
+                                    <span id="fileFormat">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Tab -->
+                        <div id="editContent" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Title:</label>
+                                <input type="text" class="form-input" id="imageTitle" value="">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Alt Text:</label>
+                                <input type="text" class="form-input" id="imageAlt" placeholder="Describe this image">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Description:</label>
+                                <textarea class="form-textarea" id="imageDescription" placeholder="Add a description..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Tags:</label>
+                                <input type="text" class="form-input" id="imageTags" placeholder="business, meeting, office">
+                            </div>
+                        </div>
+
+                        <!-- Info Tab -->
+                        <div id="infoContent" style="display: none;">
+                            <div class="file-info">
+                                <div class="file-info-item">
+                                    <span class="file-info-label">Created:</span>
+                                    <span>March 15, 2024</span>
+                                </div>
+                                <div class="file-info-item">
+                                    <span class="file-info-label">Modified:</span>
+                                    <span>March 20, 2024</span>
+                                </div>
+                                <div class="file-info-item">
+                                    <span class="file-info-label">Used in:</span>
+                                    <span>3 pages</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Privacy:</label>
+                                <select class="form-select">
+                                    <option>Public</option>
+                                    <option>Private</option>
+                                    <option>Restricted</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Preview -->
+    <div class="quick-preview" id="quickPreview">
+        <img id="previewImage" src="" alt="">
+        <div class="preview-info" id="previewInfo"></div>
+    </div>
+
+    <script>
+        let currentFolder = 'Site > Media';
+        let selectedImages = [];
+        let uploadQueue = [];
+        let duplicateFiles = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDragAndDrop();
+            setupSearch();
+            setupKeyboardShortcuts();
+        });
+
+        // Folder Tree Functions
+        function toggleTree() {
+            const tree = document.getElementById('folderTree');
+            tree.classList.toggle('collapsed');
+        }
+
+        function selectFolder(element, path) {
+            // Remove active from all items
+            document.querySelectorAll('.tree-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active to clicked item
+            element.classList.add('active');
+            
+            // Update breadcrumb
+            currentFolder = path;
+            updateBreadcrumb(path);
+        }
+
+        function updateBreadcrumb(path) {
+            const breadcrumb = document.getElementById('breadcrumbPath');
+            const parts = path.split(' > ');
+            let html = '';
+            
+            parts.forEach((part, index) => {
+                if (index === parts.length - 1) {
+                    html += `<span>${part}</span>`;
+                } else {
+                    html += `${part} <span class="breadcrumb-separator">></span> `;
+                }
+            });
+            
+            breadcrumb.innerHTML = html;
+        }
+
+        // Drag and Drop Functions
+        function setupDragAndDrop() {
+            const dropOverlay = document.getElementById('dropOverlay');
+            
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                document.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Show overlay on drag enter
+            ['dragenter', 'dragover'].forEach(eventName => {
+                document.addEventListener(eventName, () => {
+                    dropOverlay.classList.add('active');
+                }, false);
+            });
+            
+            // Hide overlay on drag leave
+            ['dragleave', 'drop'].forEach(eventName => {
+                document.addEventListener(eventName, () => {
+                    dropOverlay.classList.remove('active');
+                }, false);
+            });
+            
+            // Handle drop
+            document.addEventListener('drop', handleGlobalDrop, false);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drag-over');
+        }
+
+        function dropFiles(event, folderName) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+            
+            const files = Array.from(event.dataTransfer.files);
+            uploadFiles(files, folderName);
+        }
+
+        function handleGlobalDrop(event) {
+            const files = Array.from(event.dataTransfer.files);
+            uploadFiles(files, 'General');
+        }
+
+        // File Upload Functions
+        function handleFileUpload(event) {
+            const files = Array.from(event.target.files);
+            uploadFiles(files, currentFolder);
+        }
+
+        function uploadFiles(files, targetFolder) {
+            const progressContainer = document.getElementById('uploadProgress');
+            const progressList = document.getElementById('progressList');
+            
+            progressContainer.classList.add('active');
+            document.getElementById('uploadSpinner').style.display = 'inline-block';
+            
+            files.forEach((file, index) => {
+                // Check for duplicates
+                if (checkDuplicate(file.name)) {
+                    showDuplicateWarning(file);
+                    return;
+                }
+                
+                // Create progress item
+                const progressItem = document.createElement('div');
+                progressItem.className = 'progress-item';
+                progressItem.innerHTML = `
+                    <span style="flex-shrink: 0;">${file.name}</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <span>0%</span>
+                `;
+                progressList.appendChild(progressItem);
+                
+                // Simulate upload progress
+                simulateUpload(progressItem, file, targetFolder);
+            });
+        }
+
+        function simulateUpload(progressItem, file, folder) {
+            const progressFill = progressItem.querySelector('.progress-fill');
+            const progressText = progressItem.querySelector('span:last-child');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressItem.remove();
+                        if (document.getElementById('progressList').children.length === 0) {
+                            document.getElementById('uploadProgress').classList.remove('active');
+                            document.getElementById('uploadSpinner').style.display = 'none';
+                            showUploadComplete(file.name, folder);
+                        }
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        function showUploadComplete(filename, folder) {
+            // Add to recent files
+            addToRecentFiles(filename);
+            
+            // Show success message (could be a toast notification)
+            console.log(`Successfully uploaded ${filename} to ${folder}`);
+        }
+
+        function addToRecentFiles(filename) {
+            const recentItems = document.querySelector('.recent-items');
+            const newItem = document.createElement('div');
+            newItem.className = 'recent-item';
+            newItem.innerHTML = `<img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200" alt="${filename}">`;
+            
+            // Add to beginning
+            recentItems.insertBefore(newItem, recentItems.firstChild);
+            
+            // Remove excess items (keep only 6)
+            if (recentItems.children.length > 6) {
+                recentItems.removeChild(recentItems.lastChild);
+            }
+        }
+
+        // Duplicate Detection
+        function checkDuplicate(filename) {
+            // Simulate checking against existing files
+            const existingFiles = ['office-meeting.jpg', 'business-discussion.jpg'];
+            return existingFiles.includes(filename);
+        }
+
+        function showDuplicateWarning(file) {
+            const warning = document.getElementById('duplicateWarning');
+            warning.classList.add('active');
+            
+            // Store file for later processing
+            duplicateFiles.push(file);
+        }
+
+        function handleDuplicate(action) {
+            const warning = document.getElementById('duplicateWarning');
+            warning.classList.remove('active');
+            
+            duplicateFiles.forEach(file => {
+                switch(action) {
+                    case 'replace':
+                        uploadFiles([file], currentFolder);
+                        break;
+                    case 'keep':
+                        // Rename file and upload
+                        const newName = `${file.name.split('.')[0]}_copy.${file.name.split('.')[1]}`;
+                        uploadFiles([file], currentFolder);
+                        break;
+                    case 'cancel':
+                        // Do nothing
+                        break;
+                }
+            });
+            
+            duplicateFiles = [];
+        }
+
+        // Search and Filter Functions
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const modalSearch = document.getElementById('modalSearch');
+            
+            searchInput.addEventListener('input', debounce(searchFolders, 300));
+            modalSearch.addEventListener('input', debounce(filterImages, 300));
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function searchFolders() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const folderCards = document.querySelectorAll('.folder-card');
+            
+            folderCards.forEach(card => {
+                const folderName = card.querySelector('.folder-name').textContent.toLowerCase();
+                if (folderName.includes(query) || query === '') {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterImages() {
+            const query = document.getElementById('modalSearch').value.toLowerCase();
+            const imageItems = document.querySelectorAll('.image-item');
+            
+            imageItems.forEach(item => {
+                const imageName = item.querySelector('.image-name').textContent.toLowerCase();
+                if (imageName.includes(query) || query === '') {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function sortFolders() {
+            const sortBy = document.getElementById('sortDropdown').value;
+            const grid = document.getElementById('foldersGrid');
+            const cards = Array.from(grid.querySelectorAll('.folder-card'));
+            
+            cards.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name':
+                        return a.querySelector('.folder-name').textContent.localeCompare(
+                            b.querySelector('.folder-name').textContent
+                        );
+                    case 'date':
+                        return new Date(b.querySelector('.folder-date').textContent) - 
+                               new Date(a.querySelector('.folder-date').textContent);
+                    case 'size':
+                        return parseInt(b.querySelector('.folder-count').textContent) - 
+                               parseInt(a.querySelector('.folder-count').textContent);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Re-append sorted cards
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        function switchView(viewType) {
+            const buttons = document.querySelectorAll('.view-btn');
+            const grid = document.getElementById('foldersGrid');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (viewType === 'list') {
+                grid.style.gridTemplateColumns = '1fr';
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+            }
+        }
+
+        // Quick Preview Functions
+        function showQuickPreview(event, imageItem) {
+            const preview = document.getElementById('quickPreview');
+            const previewImage = document.getElementById('previewImage');
+            const previewInfo = document.getElementById('previewInfo');
+            const img = imageItem.querySelector('img');
+            const info = imageItem.querySelector('.image-info');
+            
+            previewImage.src = img.src;
+            previewInfo.innerHTML = info.innerHTML;
+            
+            // Position preview near cursor
+            const rect = imageItem.getBoundingClientRect();
+            preview.style.left = (rect.right + 10) + 'px';
+            preview.style.top = rect.top + 'px';
+            
+            preview.classList.add('active');
+        }
+
+        function hideQuickPreview() {
+            const preview = document.getElementById('quickPreview');
+            preview.classList.remove('active');
+        }
+
+        // Gallery Modal Functions
+        function openGallery(folderName) {
+            const modal = document.getElementById('galleryModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Update modal breadcrumb
+            const modalBreadcrumb = document.getElementById('modalBreadcrumb');
+            modalBreadcrumb.innerHTML = `Site <span class="breadcrumb-separator">></span> Media <span class="breadcrumb-separator">></span> <span>${folderName}</span>`;
+        }
+
+        function closeGallery() {
+            const modal = document.getElementById('galleryModal');
+            modal.classList.remove('active');
+            document.getElementById('detailPanel').classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Clear selections
+            document.querySelectorAll('.image-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            selectedImages = [];
+        }
+
+        function selectImage(element, imageSrc) {
+            // Remove previous selections for single select
+            document.querySelectorAll('.image-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked image
+            element.classList.add('selected');
+            
+            // Show detail panel
+            document.getElementById('detailPanel').classList.add('active');
+            
+            // Update selected image and info
+            const selectedImg = document.getElementById('selectedImage');
+            selectedImg.src = imageSrc;
+            selectedImg.
