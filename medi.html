@@ -1736,4 +1736,43 @@
             // Update selected image and info
             const selectedImg = document.getElementById('selectedImage');
             selectedImg.src = imageSrc;
-            selectedImg.
+            selectedImg.style.display = 'block';
+
+            const info = element.querySelector('.image-info');
+            const name = info.querySelector('.image-name').textContent;
+            const meta = info.querySelector('.image-meta').textContent.split('•').map(s => s.trim());
+            document.getElementById('fileName').textContent = name;
+            document.getElementById('fileSize').textContent = meta[0] || '-';
+            document.getElementById('fileDimensions').textContent = meta[1] || '-';
+            document.getElementById('fileFormat').textContent = name.split('.').pop().toUpperCase();
+        }
+
+        function switchDetailTab(button, tab) {
+            document.querySelectorAll('.detail-tab').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            document.getElementById('detailsContent').style.display = 'none';
+            document.getElementById('editContent').style.display = 'none';
+            document.getElementById('infoContent').style.display = 'none';
+
+            document.getElementById(tab + 'Content').style.display = 'block';
+        }
+
+        function cropImage() {
+            alert('Crop functionality is not implemented.');
+        }
+
+        function resizeImage() {
+            alert('Resize functionality is not implemented.');
+        }
+
+        function rotateImage() {
+            alert('Rotate functionality is not implemented.');
+        }
+
+        function adjustImage() {
+            alert('Adjust functionality is not implemented.');
+        }
+    </script>
+</body>
+</html>
