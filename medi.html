@@ -18,106 +18,12 @@
             overflow-x: hidden;
         }
 
-        /* Header Navigation */
-        .nav-header {
-            background-color: #2d5a4f;
-            color: white;
-            padding: 0 20px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-header a {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-
-        .nav-header a:hover {
-            opacity: 1;
-        }
-
         /* Main Layout */
         .main-layout {
             display: flex;
-            height: calc(100vh - 50px);
+            height: 100vh;
         }
 
-        /* Folder Tree Sidebar */
-        .folder-tree {
-            width: 280px;
-            background: white;
-            border-right: 1px solid #dee2e6;
-            display: flex;
-            flex-direction: column;
-            transition: width 0.3s;
-        }
-
-        .folder-tree.collapsed {
-            width: 60px;
-        }
-
-        .tree-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid #dee2e6;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .tree-toggle {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .tree-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-        }
-
-        .tree-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 20px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-left: 3px solid transparent;
-        }
-
-        .tree-item:hover {
-            background: #f8f9fa;
-        }
-
-        .tree-item.active {
-            background: #e8f5e8;
-            border-left-color: #50c878;
-            color: #2d5a4f;
-        }
-
-        .tree-icon {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .tree-label {
-            flex: 1;
-            font-size: 14px;
-        }
-
-        .folder-tree.collapsed .tree-label {
-            display: none;
-        }
 
         /* Main Content Area */
         .main-content {
@@ -860,19 +766,11 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .folder-tree {
-                width: 60px;
-            }
-            
-            .folder-tree .tree-label {
-                display: none;
-            }
-            
             .gallery-modal {
                 width: 98%;
                 height: 95%;
             }
-            
+
             .detail-panel {
                 width: 100%;
                 position: absolute;
@@ -904,47 +802,7 @@
     </style>
 </head>
 <body>
-    <!-- Header Navigation -->
-    <nav class="nav-header">
-        <a href="#">Pages</a>
-        <a href="#">Posts</a>
-        <a href="#" style="opacity: 1;">Site</a>
-        <a href="#">Modules</a>
-        <a href="#">System</a>
-        <a href="#">marwebadmin</a>
-    </nav>
-
     <div class="main-layout">
-        <!-- Folder Tree Sidebar -->
-        <div class="folder-tree" id="folderTree">
-            <div class="tree-header">
-                <h3>Folders</h3>
-                <button class="tree-toggle" onclick="toggleTree()">◀</button>
-            </div>
-            <div class="tree-content">
-                <div class="tree-item active" onclick="selectFolder(this, 'Site > Media')">
-                    <span class="tree-icon">🏠</span>
-                    <span class="tree-label">All Media</span>
-                </div>
-                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Documents')">
-                    <span class="tree-icon">📄</span>
-                    <span class="tree-label">Documents</span>
-                </div>
-                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Images')">
-                    <span class="tree-icon">🖼️</span>
-                    <span class="tree-label">Images</span>
-                </div>
-                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Blog')">
-                    <span class="tree-icon">📝</span>
-                    <span class="tree-label">Blog</span>
-                </div>
-                <div class="tree-item" onclick="selectFolder(this, 'Site > Media > Gallery')">
-                    <span class="tree-icon">🖼️</span>
-                    <span class="tree-label">Gallery</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Content -->
         <div class="main-content">
             <!-- Breadcrumb -->
@@ -1179,15 +1037,8 @@
                     Add Files
                 </button>
                 <input type="file" id="fileInput" multiple accept="image/*,application/pdf,.doc,.docx" style="display: none;" onchange="handleFileUpload(event)">
-                
+
                 <input type="text" class="modal-search" placeholder="Search images..." id="modalSearch" oninput="filterImages()">
-                
-                <select class="format-convert" id="formatConverter">
-                    <option value="">Convert to...</option>
-                    <option value="jpg">JPG</option>
-                    <option value="png">PNG</option>
-                    <option value="webp">WebP</option>
-                </select>
             </div>
 
             <div class="gallery-content">
@@ -1278,6 +1129,12 @@
                                 <button class="editor-btn" onclick="resizeImage()" title="Resize">📏</button>
                                 <button class="editor-btn" onclick="rotateImage()" title="Rotate">↻</button>
                                 <button class="editor-btn" onclick="adjustImage()" title="Adjust">🎨</button>
+                                <select class="format-convert" id="formatConverter">
+                                    <option value="">Convert to...</option>
+                                    <option value="jpg">JPG</option>
+                                    <option value="png">PNG</option>
+                                    <option value="webp">WebP</option>
+                                </select>
                             </div>
 
                             <div class="file-info">
@@ -1373,42 +1230,6 @@
             setupSearch();
             setupKeyboardShortcuts();
         });
-
-        // Folder Tree Functions
-        function toggleTree() {
-            const tree = document.getElementById('folderTree');
-            tree.classList.toggle('collapsed');
-        }
-
-        function selectFolder(element, path) {
-            // Remove active from all items
-            document.querySelectorAll('.tree-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active to clicked item
-            element.classList.add('active');
-            
-            // Update breadcrumb
-            currentFolder = path;
-            updateBreadcrumb(path);
-        }
-
-        function updateBreadcrumb(path) {
-            const breadcrumb = document.getElementById('breadcrumbPath');
-            const parts = path.split(' > ');
-            let html = '';
-            
-            parts.forEach((part, index) => {
-                if (index === parts.length - 1) {
-                    html += `<span>${part}</span>`;
-                } else {
-                    html += `${part} <span class="breadcrumb-separator">></span> `;
-                }
-            });
-            
-            breadcrumb.innerHTML = html;
-        }
 
         // Drag and Drop Functions
         function setupDragAndDrop() {
