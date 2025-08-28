@@ -184,6 +184,31 @@
             color: white;
         }
 
+        .modal-view-toggles {
+            display: flex;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .modal-view-btn {
+            background: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .modal-view-btn:last-child {
+            border-right: none;
+        }
+
+        .modal-view-btn.active {
+            background: #50c878;
+            color: white;
+        }
+
         /* Folders Grid */
         .folders-section {
             flex: 1;
@@ -569,35 +594,20 @@
             color: #6c757d;
         }
 
-        /* Quick Preview */
-        .quick-preview {
-            position: absolute;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            z-index: 2000;
-            max-width: 300px;
-            display: none;
-            pointer-events: none;
+        .image-grid.list-view .image-item {
+            display: flex;
+            align-items: center;
         }
 
-        .quick-preview.active {
-            display: block;
+        .image-grid.list-view .image-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-right: 10px;
         }
 
-        .quick-preview img {
-            width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        .preview-info {
-            font-size: 12px;
-            color: #6c757d;
+        .image-grid.list-view .image-info {
+            flex: 1;
         }
 
         /* Detail Panel */
@@ -1043,69 +1053,69 @@
                 <input type="file" id="fileInput" multiple accept="image/*,application/pdf,.doc,.docx" style="display: none;" onchange="handleFileUpload(event)">
 
                 <input type="text" class="modal-search" placeholder="Search images..." id="modalSearch" oninput="filterImages()">
+                <select class="sort-dropdown" id="modalSortDropdown" onchange="sortImages()">
+                    <option value="name">Sort by Name</option>
+                    <option value="date">Sort by Date</option>
+                </select>
+                <div class="modal-view-toggles">
+                    <button class="modal-view-btn active" onclick="switchModalView('grid')">⊞</button>
+                    <button class="modal-view-btn" onclick="switchModalView('list')">☰</button>
+                </div>
             </div>
 
             <div class="gallery-content">
                 <div class="images-area">
                     <div class="image-grid" id="imageGrid">
-                        <div class="image-item" data-uploaded="2024-01-15" data-edited="2024-02-01" onclick="selectImage(this, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-01-15" data-edited="2024-02-01" onclick="selectImage(this, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400')">
                             <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400" alt="Office meeting">
                             <div class="image-info">
                                 <div class="image-name">office-meeting.jpg</div>
                                 <div class="image-meta">1.2 MB • 1920×1280</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-02-10" data-edited="2024-02-12" onclick="selectImage(this, 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-02-10" data-edited="2024-02-12" onclick="selectImage(this, 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400')">
                             <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400" alt="Business discussion">
                             <div class="image-info">
                                 <div class="image-name">business-discussion.jpg</div>
                                 <div class="image-meta">980 KB • 1600×1067</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-03-05" data-edited="2024-03-06" onclick="selectImage(this, 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-03-05" data-edited="2024-03-06" onclick="selectImage(this, 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400')">
                             <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400" alt="Classroom">
                             <div class="image-info">
                                 <div class="image-name">classroom-scene.jpg</div>
                                 <div class="image-meta">1.5 MB • 2048×1365</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-04-20" data-edited="2024-04-25" onclick="selectImage(this, 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-04-20" data-edited="2024-04-25" onclick="selectImage(this, 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400')">
                             <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" alt="Waiting area">
                             <div class="image-info">
                                 <div class="image-name">waiting-area.jpg</div>
                                 <div class="image-meta">850 KB • 1440×960</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-05-10" data-edited="2024-05-15" onclick="selectImage(this, 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-05-10" data-edited="2024-05-15" onclick="selectImage(this, 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400')">
                             <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400" alt="Team meeting">
                             <div class="image-info">
                                 <div class="image-name">team-meeting.jpg</div>
                                 <div class="image-meta">1.1 MB • 1800×1200</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-06-01" data-edited="2024-06-03" onclick="selectImage(this, 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-06-01" data-edited="2024-06-03" onclick="selectImage(this, 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400')">
                             <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400" alt="Collaboration">
                             <div class="image-info">
                                 <div class="image-name">collaboration.jpg</div>
                                 <div class="image-meta">920 KB • 1500×1000</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-07-08" data-edited="2024-07-09" onclick="selectImage(this, 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-07-08" data-edited="2024-07-09" onclick="selectImage(this, 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400')">
                             <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400" alt="Team high-five">
                             <div class="image-info">
                                 <div class="image-name">team-highfive.jpg</div>
                                 <div class="image-meta">1.3 MB • 1920×1280</div>
                             </div>
                         </div>
-                        <div class="image-item" data-uploaded="2024-08-22" data-edited="2024-08-23" onclick="selectImage(this, 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400')"
-                             onmouseenter="showQuickPreview(event, this)" onmouseleave="hideQuickPreview()">
+                        <div class="image-item" data-uploaded="2024-08-22" data-edited="2024-08-23" onclick="selectImage(this, 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400')">
                             <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400" alt="Gardening">
                             <div class="image-info">
                                 <div class="image-name">gardening-hands.jpg</div>
@@ -1222,12 +1232,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Quick Preview -->
-    <div class="quick-preview" id="quickPreview">
-        <img id="previewImage" src="" alt="">
-        <div class="preview-info" id="previewInfo"></div>
     </div>
 
     <script>
@@ -1508,28 +1512,41 @@
             }
         }
 
-        // Quick Preview Functions
-        function showQuickPreview(event, imageItem) {
-            const preview = document.getElementById('quickPreview');
-            const previewImage = document.getElementById('previewImage');
-            const previewInfo = document.getElementById('previewInfo');
-            const img = imageItem.querySelector('img');
-            const info = imageItem.querySelector('.image-info');
-            
-            previewImage.src = img.src;
-            previewInfo.innerHTML = info.innerHTML;
-            
-            // Position preview near cursor
-            const rect = imageItem.getBoundingClientRect();
-            preview.style.left = (rect.right + 10) + 'px';
-            preview.style.top = rect.top + 'px';
-            
-            preview.classList.add('active');
+        function switchModalView(viewType) {
+            const buttons = document.querySelectorAll('.modal-view-btn');
+            const grid = document.getElementById('imageGrid');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (viewType === 'list') {
+                grid.style.gridTemplateColumns = '1fr';
+                grid.classList.add('list-view');
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))';
+                grid.classList.remove('list-view');
+            }
         }
 
-        function hideQuickPreview() {
-            const preview = document.getElementById('quickPreview');
-            preview.classList.remove('active');
+        function sortImages() {
+            const sortBy = document.getElementById('modalSortDropdown').value;
+            const grid = document.getElementById('imageGrid');
+            const items = Array.from(grid.querySelectorAll('.image-item'));
+
+            items.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name':
+                        return a.querySelector('.image-name').textContent.localeCompare(
+                            b.querySelector('.image-name').textContent
+                        );
+                    case 'date':
+                        return new Date(b.dataset.uploaded) - new Date(a.dataset.uploaded);
+                    default:
+                        return 0;
+                }
+            });
+
+            items.forEach(item => grid.appendChild(item));
         }
 
         // Gallery Modal Functions
